@@ -56,7 +56,6 @@ const MOCK_USERS = [
 
 const NAV_SECTIONS = [
   ["#nav",        "Navigation"],
-  ["#home",       "Home"],
   ["#auth",       "Auth"],
   ["#restaurant", "Restaurant"],
   ["#tracking",   "Order tracking"],
@@ -92,13 +91,7 @@ function Card({ label, children, noPad }) {
 // ─────────────────────────────────────────────
 
 function SushiMark() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>
-      <circle cx="10" cy="10" r="9"   fill="var(--accent)" opacity="0.12" />
-      <circle cx="10" cy="10" r="5.5" fill="var(--accent)" opacity="0.28" />
-      <circle cx="10" cy="10" r="2.5" fill="var(--accent)" />
-    </svg>
-  );
+  return <span aria-hidden>🍣</span>;
 }
 
 // ─────────────────────────────────────────────
@@ -584,7 +577,6 @@ export default function DemoPage() {
     <div className={styles.page}>
       <header className={styles.pageHeader}>
         <nav className={styles.nav}>
-          <a href="/" className={styles.navHome}>← Home</a>
           {NAV_SECTIONS.map(([href, label]) => (
             <a key={href} href={href} className={styles.navLink}>{label}</a>
           ))}
