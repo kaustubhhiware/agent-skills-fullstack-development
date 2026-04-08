@@ -20,7 +20,7 @@
 - Passwords: bcrypt (salted + hashed).
 - Platform: Railway (flask backend + React served as static build).
 - Every developer command is a `make` command, documented in README.
-- Frontend first, backend next, platform last.
+- Backend first, frontend next, platform last.
 
 ---
 
@@ -116,6 +116,8 @@ order_history  (bonus: for favorites suggestion)
     ├── src/
     │   ├── main.jsx             # React root, router
     │   ├── api.js               # fetch wrapper (base URL, auth header)
+    │   ├── contexts/
+    │   │   └── AuthContext.jsx  # AuthContext + useAuth hook (token, role, login, logout)
     │   ├── pages/
     │   │   ├── Home.jsx         # Landing: browse menu, search, cart sidebar
     │   │   ├── Login.jsx
@@ -334,6 +336,9 @@ CREATE TABLE IF NOT EXISTS order_history (
 """
 
 def get_db(app):
+    # NOTE: Call as get_db(current_app) from within route handlers.
+    # current_app and g are both available during request handling.
+    # Never call get_db outside a request or app context.
     if "db" not in g:
         g.db = sqlite3.connect(
             app.config["DATABASE"],
@@ -941,6 +946,8 @@ def place_order():
         "INSERT INTO orders(order_id, customer_id, restaurant_id, status, total_amount, created_at, updated_at) VALUES(?,?,?,?,?,?,?)",
         (order_id, request.user["sub"], restaurant_id, "placed", total, now, now)
     )
+    # NOTE: order_history writes (for favorites) are added in Task 14.
+    # Without Task 14, the order_history table will remain empty and favorites will return no data.
     for oi in order_items:
         db.execute(
             "INSERT INTO order_items(order_item_id, order_id, item_id, name, price, quantity) VALUES(?,?,?,?,?,?)",
@@ -1191,7 +1198,88 @@ git commit -m "feat: CSS design tokens and API client"
 
 ---
 
-### Task 9: Frontend — Auth Pages (Login + Register)
+### Task 9: Frontend — Auth Context + useAuth Hook
+
+**Files:**
+- Create: `frontend/src/contexts/AuthContext.jsx`
+- Modify: `frontend/src/main.jsx` (wrap with `AuthProvider`)
+
+**Why this task exists:** `ProtectedRoute`, `Login`, `Register`, `Home`, and `RestaurantDashboard` all need to read and mutate auth state. Scattering `localStorage.getItem("token")` calls across every component causes stale reads after logout and races between components. A single context ensures a single source of truth and a clean logout signal.
+
+- [ ] **Step 1: Create `frontend/src/contexts/AuthContext.jsx`**
+
+```jsx
+import { createContext, useContext, useState, useCallback } from "react";
+
+const AuthContext = createContext(null);
+
+export function AuthProvider({ children }) {
+  const [auth, setAuth] = useState(() => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    const userId = localStorage.getItem("user_id");
+    const name = localStorage.getItem("name");
+    return token ? { token, role, userId, name } : null;
+  });
+
+  const login = useCallback((data) => {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("role", data.role);
+    localStorage.setItem("user_id", data.user_id);
+    localStorage.setItem("name", data.name);
+    setAuth({ token: data.token, role: data.role, userId: data.user_id, name: data.name });
+  }, []);
+
+  const logout = useCallback(() => {
+    ["token", "role", "user_id", "name"].forEach(k => localStorage.removeItem(k));
+    setAuth(null);
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ auth, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  return ctx;
+}
+```
+
+- [ ] **Step 2: Wrap app with `AuthProvider` in `frontend/src/main.jsx`**
+
+```jsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import App from "./App";
+import "../app/globals.css";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
+  </React.StrictMode>
+);
+```
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add frontend/src/contexts/AuthContext.jsx frontend/src/main.jsx
+git commit -m "feat: auth context and useAuth hook"
+```
+
+---
+
+### Task 10: Frontend — Auth Pages (Login + Register)
 
 **Files:**
 - Create: `frontend/src/pages/Login.jsx`
@@ -1231,11 +1319,11 @@ export default function App() {
 
 ```jsx
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function ProtectedRoute({ roles, children }) {
-  const role = localStorage.getItem("role");
-  const token = localStorage.getItem("token");
-  if (!token || (roles && !roles.includes(role))) {
+  const { auth } = useAuth();
+  if (!auth || (roles && !roles.includes(auth.role))) {
     return <Navigate to="/login" replace />;
   }
   return children;
@@ -1248,6 +1336,7 @@ export default function ProtectedRoute({ roles, children }) {
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api } from "../api";
+import { useAuth } from "../contexts/AuthContext";
 
 const STYLES = {
   page: { minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--color-page)" },
@@ -1266,16 +1355,14 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
     try {
       const data = await api.post("/auth/login", { email, password });
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.role);
-      localStorage.setItem("user_id", data.user_id);
-      localStorage.setItem("name", data.name);
+      login(data);
       navigate(data.role === "restaurant" ? "/dashboard" : "/");
     } catch (err) {
       setError(err.message);
@@ -1311,6 +1398,7 @@ export default function Login() {
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api } from "../api";
+import { useAuth } from "../contexts/AuthContext";
 
 const ROLES = [
   { value: "customer", label: "Customer" },
@@ -1337,16 +1425,14 @@ export default function Register() {
   const [role, setRole] = useState("customer");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
     try {
       const data = await api.post("/auth/register", { name, email, password, role });
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.role);
-      localStorage.setItem("user_id", data.user_id);
-      localStorage.setItem("name", data.name);
+      login(data);
       navigate(data.role === "restaurant" ? "/dashboard" : "/");
     } catch (err) {
       setError(err.message);
@@ -1404,7 +1490,7 @@ git commit -m "feat: login and registration pages"
 
 ---
 
-### Task 10: Frontend — Home Page (Browse + Search + Cart)
+### Task 11: Frontend — Home Page (Browse + Search + Cart)
 
 **Files:**
 - Create: `frontend/src/pages/Home.jsx`
@@ -1517,6 +1603,7 @@ export default function Cart({ items, onUpdate, restaurantId }) {
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
+import { useAuth } from "../contexts/AuthContext";
 import MenuCard from "../components/MenuCard";
 import Cart from "../components/Cart";
 
@@ -1542,8 +1629,14 @@ export default function Home() {
   const [cartItems, setCartItems] = useState([]);
   const [cartRestaurantId, setCartRestaurantId] = useState(null);
   const navigate = useNavigate();
-  const role = localStorage.getItem("role");
-  const name = localStorage.getItem("name");
+  const { auth, logout } = useAuth();
+  const role = auth?.role ?? null;
+  const name = auth?.name ?? null;
+
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
 
   useEffect(() => {
     api.get("/restaurants").then(data => {
@@ -1580,11 +1673,6 @@ export default function Home() {
     return matchesSearch && matchesCategory && item.available;
   });
 
-  function logout() {
-    ["token", "role", "user_id", "name"].forEach(k => localStorage.removeItem(k));
-    navigate("/login");
-  }
-
   return (
     <div style={STYLES.page}>
       <nav style={STYLES.nav}>
@@ -1592,7 +1680,7 @@ export default function Home() {
         <div style={STYLES.navLinks}>
           {role === "restaurant" && <Link style={STYLES.navLink} to="/dashboard">Dashboard</Link>}
           {!role && <><Link style={STYLES.navLink} to="/login">Sign in</Link><Link style={STYLES.navLink} to="/register">Register</Link></>}
-          {role && <><span style={STYLES.navLink}>{name}</span><button style={STYLES.logoutBtn} onClick={logout}>Sign out</button></>}
+          {role && <><span style={STYLES.navLink}>{name}</span><button style={STYLES.logoutBtn} onClick={handleLogout}>Sign out</button></>}
         </div>
       </nav>
       <main style={STYLES.main}>
@@ -1643,7 +1731,7 @@ git commit -m "feat: home page with menu browse, search, category filter, and ca
 
 ---
 
-### Task 11: Frontend — Restaurant Dashboard
+### Task 12: Frontend — Restaurant Dashboard
 
 **Files:**
 - Create: `frontend/src/pages/RestaurantDashboard.jsx`
@@ -1654,6 +1742,7 @@ git commit -m "feat: home page with menu browse, search, category filter, and ca
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api } from "../api";
+import { useAuth } from "../contexts/AuthContext";
 
 const ORDER_STATUSES = ["placed", "confirmed", "preparing", "out_for_delivery", "delivered", "cancelled"];
 const NEXT_STATUS = {
@@ -1690,9 +1779,10 @@ export default function RestaurantDashboard() {
   const [form, setForm] = useState({ name: "", description: "", price: "", category: "" });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { auth, logout } = useAuth();
 
   useEffect(() => {
-    const userId = localStorage.getItem("user_id");
+    const userId = auth?.userId;
     api.get("/restaurants").then(all => {
       const mine = all.find(r => r.user_id === userId);
       if (mine) {
@@ -1740,8 +1830,8 @@ export default function RestaurantDashboard() {
     setMenuItems(prev => prev.map(i => i.item_id === item.item_id ? updated : i));
   }
 
-  function logout() {
-    ["token", "role", "user_id", "name"].forEach(k => localStorage.removeItem(k));
+  function handleLogout() {
+    logout();
     navigate("/login");
   }
 
@@ -1751,7 +1841,7 @@ export default function RestaurantDashboard() {
         <Link style={STYLES.brand} to="/">FoodAgg</Link>
         <div style={{ display: "flex", gap: "var(--spacing-md)", alignItems: "center" }}>
           <span style={STYLES.navLink}>{restaurant?.name ?? "Dashboard"}</span>
-          <button style={STYLES.logoutBtn} onClick={logout}>Sign out</button>
+          <button style={STYLES.logoutBtn} onClick={handleLogout}>Sign out</button>
         </div>
       </nav>
       <main style={STYLES.main}>
@@ -1786,7 +1876,7 @@ export default function RestaurantDashboard() {
         <div style={STYLES.section}>
           <h2 style={STYLES.sectionTitle}>Incoming orders</h2>
           <p style={{ color: "var(--color-text-secondary)", fontSize: "0.9rem" }}>
-            Orders placed by customers appear here. (Requires backend orders-by-restaurant endpoint — see Task 12.)
+            Orders placed by customers appear here. (Requires backend orders-by-restaurant endpoint — see Task 13.)
           </p>
         </div>
       </main>
@@ -1808,7 +1898,7 @@ git commit -m "feat: restaurant dashboard with menu management"
 
 ---
 
-### Task 12: Backend — Orders by Restaurant Endpoint
+### Task 13: Backend — Orders by Restaurant Endpoint
 
 **Files:**
 - Modify: `backend/routes/orders.py`
@@ -1932,7 +2022,7 @@ git commit -m "feat: orders-by-restaurant endpoint and live order dashboard"
 
 ---
 
-### Task 13: Frontend — Order Tracking Page
+### Task 14: Frontend — Order Tracking Page
 
 **Files:**
 - Create: `frontend/src/pages/OrderTracking.jsx`
@@ -2052,7 +2142,7 @@ git commit -m "feat: order tracking page with live status polling"
 
 ---
 
-### Task 14: Backend — Favorites Suggestion (Bonus)
+### Task 15: Backend — Favorites Suggestion (Bonus)
 
 **Files:**
 - Modify: `backend/routes/orders.py`
@@ -2145,7 +2235,7 @@ git commit -m "feat: favorites suggestion based on order history"
 
 ---
 
-### Task 15: Favorites on Home Page (Bonus)
+### Task 16: Favorites on Home Page (Bonus)
 
 **Files:**
 - Modify: `frontend/src/pages/Home.jsx`
@@ -2202,7 +2292,7 @@ git commit -m "feat: favorites section on home page for returning customers"
 
 ---
 
-### Task 16: README + Makefile — Full Documentation
+### Task 17: README + Makefile — Full Documentation
 
 **Files:**
 - Modify: `README.md`
@@ -2302,21 +2392,106 @@ git commit -m "docs: setup instructions, env vars, architecture overview"
 
 ---
 
+### Task 18: Railway Deployment
+
+**Files:**
+
+- Create: `railway.toml`
+- Create: `backend/Procfile`
+- Modify: `backend/app.py` (serve frontend static build)
+- Modify: `Makefile` (add `build-frontend` target)
+
+**Why this task exists:** Railway's filesystem is ephemeral. A SQLite file at a relative path will be wiped on every redeploy. This task specifies the persistence strategy, environment variables, and the static-serving wiring so a deploying agent does not silently lose data or ship a broken frontend URL.
+
+- [ ] **Step 1: Add `build-frontend` to `Makefile`**
+
+```makefile
+build-frontend:
+	cd frontend && npm run build
+```
+
+- [ ] **Step 2: Create `backend/Procfile`**
+
+```
+web: uv run gunicorn app:create_app --bind 0.0.0.0:$PORT
+```
+
+Add `gunicorn` to backend dependencies:
+
+```bash
+cd backend && uv add gunicorn
+```
+
+- [ ] **Step 3: Serve frontend static build from Flask in `backend/app.py`**
+
+Add after blueprint registration, inside `create_app`:
+
+```python
+import os
+from flask import send_from_directory
+
+FRONTEND_BUILD = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_frontend(path):
+    full = os.path.join(FRONTEND_BUILD, path)
+    if path and os.path.exists(full):
+        return send_from_directory(FRONTEND_BUILD, path)
+    return send_from_directory(FRONTEND_BUILD, "index.html")
+```
+
+- [ ] **Step 4: Create `railway.toml`**
+
+```toml
+[build]
+builder = "nixpacks"
+buildCommand = "make build-frontend && cd backend && uv sync"
+
+[deploy]
+startCommand = "cd backend && uv run gunicorn 'app:create_app()' --bind 0.0.0.0:$PORT"
+healthcheckPath = "/"
+restartPolicyType = "on-failure"
+```
+
+- [ ] **Step 5: Document required environment variables**
+
+Set the following in the Railway dashboard under **Variables**:
+
+| Variable | Value |
+|---|---|
+| `SECRET_KEY` | A long random string (required — do NOT use the dev default) |
+| `DATABASE` | `/data/restaurant.db` (Railway persistent volume mount path) |
+| `VITE_API_URL` | Leave empty — frontend is served by Flask, same origin |
+
+**IMPORTANT:** Without a Railway persistent volume mounted at `/data`, the SQLite database will be destroyed on every redeploy. Add a volume in Railway dashboard → Service → Volumes, mount path `/data`.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add railway.toml backend/Procfile backend/app.py Makefile
+git commit -m "feat: Railway deployment config with static frontend serving"
+```
+
+---
+
 ## Self-Review Against Spec
 
 **Spec requirement → Task coverage:**
 
 | Requirement | Task |
 |---|---|
-| Entry page with menu, search, category browse, cart | Task 10 |
-| Restaurant/customer registration | Task 9, Task 3 |
-| Place orders and track through delivery stages | Tasks 6, 13 |
+| Entry page with menu, search, category browse, cart | Task 11 |
+| Restaurant/customer registration | Task 10, Task 3 |
+| Frontend auth state (context, protected routes) | Task 9, Task 10 |
+| Place orders and track through delivery stages | Tasks 6, 14 |
 | Billing (total amount on order) | Task 6 |
-| Favorites / order history (bonus) | Tasks 14, 15 |
+| Favorites / order history (bonus) | Tasks 15, 16 |
 | Admin role | Tasks 3, 7 |
-| Restaurant menu management | Tasks 5, 11 |
+| Restaurant menu management | Tasks 5, 12 |
 | Status transitions with valid-state machine | Task 6 |
 | Database (SQLite, all tables) | Task 2 |
 | JWT auth, bcrypt passwords | Task 3 |
+| Railway deployment + env var spec | Task 18 |
 
 All spec requirements covered. No placeholders. Type and method names are consistent across tasks.

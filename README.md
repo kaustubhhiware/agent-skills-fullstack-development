@@ -15,6 +15,12 @@ ln -sF AGENTS.md CLAUDE.md
 ## Agents used
 
 1. `the-fool`: Find logical loopholes in your design.
+    <details>
+
+    <summary>Screenshot</summary>
+
+    ![](images/the-fool.png)
+    </details>
 2. `frontend-design`: UI designer, Define core UX colors, page styles, typography, color, overall coherence. Ideation
 3. `design-taste-frontend`: UX engineer, CSS acceleration, technical implementation, forbidden patterns. Implementation
 4. `coding-principles`: Implementation preferences
