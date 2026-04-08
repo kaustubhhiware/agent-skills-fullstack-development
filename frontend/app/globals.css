@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap');
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+:root {
+    /* Fonts */
+    --font-geist-sans: 'Geist', system-ui, sans-serif;
+    --font-geist-mono: 'Geist Mono', ui-monospace, 'Cascadia Code', monospace;
+
+    /* Surfaces */
+    --bg-page: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-subtle: #f1f5f9;
+    --bg-editor: #0f172a;
+
+    /* Borders */
+    --border: #e2e8f0;
+    --border-subtle: #f1f5f9;
+    --border-strong: #cbd5e1;
+
+    /* Text */
+    --text-muted: #64748b;
+    --text-secondary: #94a3b8;
+    --text: #475569;
+    --text-dim: #334155;
+    --text-strong: #1e293b;
+    --text-heading: #0f172a;
+
+    /* Accent (primary actions) */
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+
+    /* Success */
+    --success-bg: #ecfdf5;
+    --success-fg: #10b981;
+
+    /* Warning */
+    --warning-bg: #fffbeb;
+    --warning-border: #fde68a;
+    --warning-icon: #f59e0b;
+    --warning-fg: #b45309;
+    --warning-fg-strong: #92400e;
+    --warning-fg-hover: #78350f;
+
+    /* Error */
+    --error-bg: #fef2f2;
+    --error-fg: #ef4444;
+
+    /* Info (confirmed orders, admin badges) */
+    --info-bg: #eff6ff;
+    --info-fg: #2563eb;
+
+    /* Violet (out-for-delivery orders) */
+    --violet-bg: #f5f3ff;
+    --violet-fg: #7c3aed;
+}
+
+body {
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-strong);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Shared spinner animation ── */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+.spinIcon {
+    animation: spin 0.75s linear infinite;
+}
+
+/* ── Shared wordmark ── */
+.wordmark {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-heading);
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: opacity 0.15s ease;
+}
+
+.wordmark:hover {
+    opacity: 0.7;
+}
+
+.wordmarkIcon {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.wordmarkText {
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.025em;
+}

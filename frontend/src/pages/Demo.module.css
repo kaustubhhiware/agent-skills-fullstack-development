@@ -1,0 +1,1037 @@
+/* ─────────────────────────────────────────────────────────────
+   FoodSpark — Component States Demo Page
+   Mirrors globals.css CSS variables; no Tailwind; no magic colors.
+───────────────────────────────────────────────────────────── */
+
+/* ── Page shell ── */
+.page {
+  min-height: 100dvh;
+  background: var(--bg-page);
+  color: var(--text);
+  font-family: var(--font-geist-sans);
+}
+
+.pageHeader {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 1.5rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-page);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.9375rem;
+}
+
+.navHome {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.navLink {
+  color: var(--text-secondary);
+  margin-left: 1em;
+  font-size: 1.1rem;
+  text-decoration: none;
+}
+
+.navLink:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.main {
+  padding: 2rem 2.5rem;
+  max-width: 72rem;
+}
+
+.pageTitle {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin: 0 0 0.25rem;
+}
+
+.pageSubtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ── Section + Card structure ── */
+.section {
+  margin-bottom: 3.5rem;
+  padding-bottom: 3.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 0.375rem;
+}
+
+.sectionNote {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  margin: 0 0 1rem;
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin-bottom: 0.875rem;
+}
+
+.cardLabel {
+  padding: 0.375rem 0.875rem;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+  color: var(--text-strong);
+}
+
+.cardBody {
+  padding: 1rem 1.25rem;
+}
+
+.cardBodyNoPad {
+  padding: 0;
+}
+
+.resetBtn {
+  font-size: 0.8125rem;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.inlineLink {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── Top Navigation replica ── */
+.navBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  height: 56px;
+  background: var(--bg-surface);
+}
+
+.navBrand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navWordmark {
+  font-weight: 700;
+  font-size: 1.125rem;
+  letter-spacing: -0.025em;
+  color: var(--text-heading);
+}
+
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ghostBtn {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 0.875rem;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.solidBtn {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  border: none;
+  background: var(--accent);
+  color: var(--bg-page);
+  font-size: 0.875rem;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cartBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.cartBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 9999px;
+  background: var(--accent);
+  color: var(--bg-page);
+  font-size: 0.625rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+
+.avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.avatarAdmin {
+  background: var(--info-bg);
+  color: var(--info-fg);
+  border-color: var(--info-fg);
+}
+
+.navDashLink {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ── Home: Restaurant list ── */
+.browsePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.filterChips {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.chipActive {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg-page);
+}
+
+.restaurantCard {
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--bg-surface);
+}
+
+.restaurantName {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-strong);
+  margin: 0 0 0.25rem;
+}
+
+.restaurantMeta {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cuisineTag {
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+.emptyText {
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* ── Home: Cart sidebar ── */
+.cartPanel {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: var(--bg-surface);
+}
+
+.cartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.cartCountBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  background: var(--accent);
+  color: var(--bg-page);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0 4px;
+}
+
+.cartItems {
+  padding: 0.5rem 0;
+}
+
+.cartItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.cartItemName {
+  color: var(--text-dim);
+  flex: 1;
+}
+
+.cartItemRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.qtyControl {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.qtyBtn {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+
+.qtyNum {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  min-width: 1.25rem;
+  text-align: center;
+  color: var(--text-dim);
+}
+
+.cartLineTotal {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: var(--font-geist-mono);
+  color: var(--text-strong);
+  min-width: 3.5rem;
+  text-align: right;
+}
+
+.cartFooter {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.cartSubtotal {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--text-dim);
+}
+
+.cartSubtotalAmt {
+  font-family: var(--font-geist-mono);
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.cartPlaceOrder {
+  width: 100%;
+  padding: 0.5625rem;
+  border: none;
+  border-radius: 0.375rem;
+  background: var(--accent);
+  color: var(--bg-page);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.cartPlaceOrderDisabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cartEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+.cartEmptyText {
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+/* ── Auth forms ── */
+.authForm {
+  max-width: 22rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.authFormTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin: 0;
+}
+
+.formFields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fieldLabel {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+
+.fieldInput {
+  padding: 0.4375rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background: var(--bg-surface);
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: var(--text-strong);
+  outline: none;
+}
+
+.fieldInputError {
+  border-color: var(--error-fg);
+}
+
+.fieldError {
+  font-size: 0.75rem;
+  color: var(--error-fg);
+}
+
+.authSubmit {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5625rem;
+  border: none;
+  border-radius: 0.375rem;
+  background: var(--accent);
+  color: var(--bg-page);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.authFooter {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.roleSelector {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.roleOption {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.conditionalField {
+  animation: expandDown 0.18s ease-out;
+}
+
+@keyframes expandDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Restaurant Dashboard: Menu tab ── */
+.menuDash {
+  display: grid;
+  grid-template-columns: 1fr 1.75fr;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  overflow: hidden;
+  min-height: 16rem;
+}
+
+.menuList {
+  border-right: 1px solid var(--border);
+  overflow: auto;
+}
+
+.menuListHeader {
+  padding: 0.5rem 0.875rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-subtle);
+}
+
+.menuItemRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 0.875rem;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.menuItemRowActive {
+  background: var(--info-bg);
+}
+
+.menuItemRowDimmed {
+  opacity: 0.45;
+}
+
+.menuItemName {
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.menuItemRight {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.menuPrice {
+  font-family: var(--font-geist-mono);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.toggle {
+  width: 2rem;
+  height: 1.125rem;
+  border-radius: 9999px;
+  background: var(--success-fg);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.toggleOff {
+  background: var(--border-strong);
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 0.8125rem;
+  height: 0.8125rem;
+  border-radius: 50%;
+  background: var(--bg-surface);
+}
+
+.toggleThumbOff {
+  right: auto;
+  left: 2px;
+}
+
+.menuAddBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.875rem;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--border);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  color: var(--accent);
+  cursor: pointer;
+  text-align: left;
+}
+
+.menuEditor {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: var(--bg-surface);
+}
+
+.menuEditorTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-strong);
+  margin: 0;
+}
+
+.menuEditorFields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.menuEditorActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.saveBtn {
+  padding: 0.4375rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  background: var(--accent);
+  color: var(--bg-page);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.deleteBtn {
+  padding: 0.4375rem 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--error-fg);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ── Restaurant Dashboard: Orders tab ── */
+.orderCard {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.orderCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border);
+}
+
+.orderCardId {
+  font-family: var(--font-geist-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.orderCardCustomer {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.orderCardMeta {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.orderCardTotal {
+  font-family: var(--font-geist-mono);
+  font-weight: 600;
+  color: var(--text-strong);
+  font-size: 0.9375rem;
+}
+
+.orderCardBody {
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.orderItemsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.orderItemsTable td {
+  padding: 0.25rem 0;
+  color: var(--text-dim);
+}
+
+.orderItemsTable td:nth-child(2) {
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.orderItemsTable td:last-child {
+  text-align: right;
+  font-family: var(--font-geist-mono);
+}
+
+.orderActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ── Order Tracking: Status stepper ── */
+.stepperWrap {
+  padding: 1rem 0;
+}
+
+.stepper {
+  display: flex;
+  align-items: flex-start;
+}
+
+.stepItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.stepItem:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+
+.stepItemCompleted:not(:last-child)::after {
+  background: var(--accent);
+}
+
+.stepCircle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg-surface);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stepCircleCompleted {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.stepCircleActive {
+  border-color: var(--accent);
+  animation: stepPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes stepPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.35); }
+  50%       { box-shadow: 0 0 0 6px rgba(37, 99, 235, 0); }
+}
+
+.stepCheck {
+  color: var(--bg-page);
+}
+
+.stepLabel {
+  font-size: 0.625rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 0.375rem;
+  max-width: 5rem;
+  line-height: 1.3;
+}
+
+.stepLabelActive {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.stepLabelCompleted {
+  color: var(--text-dim);
+}
+
+.stepperCancelledBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 1rem;
+  padding: 0.375rem 0.875rem;
+  background: var(--error-bg);
+  color: var(--error-fg);
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+/* ── Admin: User table ── */
+.userTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.userTable th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-subtle);
+}
+
+.userTable td {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-dim);
+}
+
+.userTable tr:last-child td {
+  border-bottom: none;
+}
+
+.userNameCell {
+  font-weight: 500;
+  color: var(--text-strong) !important;
+}
+
+.userEmailCell {
+  font-family: var(--font-geist-mono);
+  font-size: 0.8125rem !important;
+  color: var(--text-muted) !important;
+}
+
+.userJoinedCell {
+  color: var(--text-secondary) !important;
+  font-size: 0.8125rem !important;
+}
+
+.tableDeleteBtn {
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--error-fg);
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ── Shared: Status badges ── */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.statusPlaced        { background: var(--bg-subtle);    color: var(--text-dim); }
+.statusConfirmed     { background: var(--info-bg);       color: var(--info-fg); }
+.statusPreparing     { background: var(--warning-bg);    color: var(--warning-fg-strong); }
+.statusOutForDelivery{ background: var(--violet-bg);     color: var(--violet-fg); }
+.statusDelivered     { background: var(--success-bg);    color: var(--success-fg); }
+.statusCancelled     { background: var(--error-bg);      color: var(--error-fg); }
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.roleCustomer    { background: var(--bg-subtle);    color: var(--text-dim); }
+.roleRestaurant  { background: var(--warning-bg);   color: var(--warning-fg-strong); }
+.roleAdmin       { background: var(--info-bg);      color: var(--info-fg); }
+
+/* ── Shared: Toast / Banner ── */
+.toastRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5625rem 1.25rem;
+  font-size: 0.875rem;
+}
+
+.toastDefault {
+  background: var(--bg-subtle);
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+}
+
+.toastSuccess {
+  background: var(--success-bg);
+  color: var(--success-fg);
+  border-bottom: 1px solid var(--border);
+}
+
+.toastWarning {
+  background: var(--warning-bg);
+  color: var(--warning-fg-strong);
+  border-bottom: 1px solid var(--warning-border);
+}
+
+.toastError {
+  background: var(--error-bg);
+  color: var(--error-fg);
+  border-bottom: 1px solid var(--border);
+}
+
+.toastDismiss {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.25rem;
+  border: none;
+  background: transparent;
+  color: inherit;
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+/* ── Badge row ── */
+.badgeRow {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}

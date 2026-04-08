@@ -3,6 +3,14 @@
 How to use agent skills for fullstack development: design, planning, development
 
 
+## Running the frontend
+
+```sh
+make dev-frontend
+```
+
+Opens at `http://localhost:5173`. The root `/` redirects to `/demo`.
+
 ## Code editor agnostic setup
 
 ```sh
