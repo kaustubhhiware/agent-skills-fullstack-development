@@ -20,7 +20,7 @@ touch CLAUDE.md
 ln -sF AGENTS.md CLAUDE.md
 ```
 
-## Agents used
+## Skills used
 
 1. `the-fool`: Find logical loopholes in your design.
     <details>
