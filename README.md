@@ -1,7 +1,10 @@
 # agent-skills-fullstack-development
 
-How to use agent skills for fullstack development: design, planning, development
+How to use agent skills for fullstack development: design, planning, development.
 
+## Slides
+
+The Slides for the Tokyo AI event: [Engineering Agentic Workflows: A Full-Stack Perspective](https://luma.com/zn7pp9rj?tk=vQPG9X) can be found at [Agent Skills for full-stack development.pdf](./Agent%20Skills%20for%20full-stack%20development.pdf)
 
 ## Running the frontend
 
